@@ -1,0 +1,67 @@
+[
+  {
+    "platform": "x",
+    "id": "2115486141918990796",
+    "url": "https://x.com/expatanon/status/2115486141918990796",
+    "title": "",
+    "text": "We posted a software engineer job on two sites. Within three days we had +1200 applicants. Most resumes are suspiciously well-tailored to our tech stack, to the point where I'm inclined to remove mention of specific technologies altogether. Market is broken on both sides.",
+    "author": {"platform": "x", "handle": "expatanon", "name": "expatanon", "bio": "", "profile_url": "https://x.com/expatanon", "said": "We posted a software engineer job on two sites. Within three days we had +1200 applicants.", "is_author": true},
+    "created_at": "2026-10-28T16:49:00+00:00",
+    "community": "",
+    "likes": 3700,
+    "replies_count": 142,
+    "views": 135000,
+    "replies": [
+      {"platform": "x", "handle": "sample_cto_fintech", "name": "SAMPLE CTO", "bio": "SAMPLE DATA. CTO at an example Series A fintech, hiring backend engineers.", "profile_url": "", "said": "Same here. We had 800 applicants for one senior backend role and the take-home answers were nearly identical.", "is_author": false},
+      {"platform": "x", "handle": "sample_founder_saas", "name": "SAMPLE Founder", "bio": "SAMPLE DATA. Co-founder of an example B2B SaaS, 15 people.", "profile_url": "", "said": "We're seeing exactly this. Every CV matches the job ad word for word now.", "is_author": false},
+      {"platform": "x", "handle": "sample_jobseeker", "name": "SAMPLE Dev", "bio": "SAMPLE DATA. Software engineer, open to work.", "profile_url": "", "said": "Maybe stop asking for 10 years of experience in a 5-year-old framework.", "is_author": false},
+      {"platform": "x", "handle": "sample_recruiter", "name": "SAMPLE Recruiter", "bio": "SAMPLE DATA. Tech recruiter, DM me for roles.", "profile_url": "", "said": "This is why you need a recruiter. DM me.", "is_author": false}
+    ]
+  },
+  {
+    "platform": "x",
+    "id": "greg-yang-2024-10-07",
+    "url": "https://fortune.com/2024/10/23/elon-musks-xai-cofounder-calls-out-cheating-interviewee-and-now-employers-are-outing-the-ai-tools-being-abused-by-savvy-job-seekers/",
+    "title": "xAI co-founder catches a candidate cheating in his interview",
+    "text": "Caught someone cheating in my interview today, for the first time (that I know of). (As reported by Fortune; the post drew over 2.4 million views.)",
+    "author": {"platform": "x", "handle": "TheGregYang", "name": "Greg Yang", "bio": "Co-founder of xAI", "profile_url": "", "said": "Caught someone cheating in my interview today, for the first time (that I know of).", "is_author": true},
+    "created_at": "2024-10-07T12:00:00+00:00",
+    "community": "",
+    "likes": 0,
+    "replies_count": 0,
+    "views": 2400000,
+    "replies": []
+  },
+  {
+    "platform": "reddit",
+    "id": "startupindia-90-percent",
+    "url": "https://www.businesstoday.in/amp/latest/trends/story/90-engineers-cant-code-founder-says-he-fires-new-hires-within-weeks-reddit-slams-hiring-process-not-coders-480422-2025-06-14",
+    "title": "India has 90% engineering graduates who can't code",
+    "text": "A founder says he often fires new engineering hires within a week, despite offering big raises, because they can't code. (As reported by Business Today.)",
+    "author": {"platform": "reddit", "handle": "anonymous_founder", "name": "", "bio": "", "profile_url": "", "said": "India has 90% engineering graduates who can't code.", "is_author": true},
+    "created_at": "2025-06-14T00:00:00+00:00",
+    "community": "r/StartUpIndia",
+    "likes": 0,
+    "replies_count": 0,
+    "views": 0,
+    "replies": [
+      {"platform": "reddit", "handle": "sample_commenter", "name": "", "bio": "", "profile_url": "", "said": "SAMPLE DATA. If a week of work is enough to reject them, what were you testing in the interview?", "is_author": false}
+    ]
+  },
+  {
+    "platform": "hackernews",
+    "id": "sample-hn-1",
+    "url": "https://news.ycombinator.com/",
+    "title": "SAMPLE: Ask HN: How long is it taking you to hire a senior engineer right now?",
+    "text": "SAMPLE DATA. We've had a senior backend role open for four months. Two offers declined, one candidate clearly used AI in the live coding round. How are other small teams handling this?",
+    "author": {"platform": "hackernews", "handle": "sample_hn_cto", "name": "", "bio": "SAMPLE DATA. CTO at a 30-person logistics SaaS.", "profile_url": "", "said": "We've had a senior backend role open for four months.", "is_author": true},
+    "created_at": "2026-10-29T09:00:00+00:00",
+    "community": "Hacker News",
+    "likes": 180,
+    "replies_count": 96,
+    "views": 0,
+    "replies": [
+      {"platform": "hackernews", "handle": "sample_hn_vp", "name": "", "bio": "SAMPLE DATA. VP Engineering, healthtech scale-up.", "profile_url": "", "said": "Same experience. Our last senior hire took 14 weeks and three recruiters.", "is_author": false}
+    ]
+  }
+]

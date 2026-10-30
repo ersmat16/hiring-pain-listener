@@ -1,0 +1,55 @@
+# Hiring pain listener: what to watch, who counts as ICP, and how strict to be.
+
+company: >
+  Cloud Employee places senior software engineers, vetted live on real problems,
+  into clients' engineering teams within about a week.
+
+campaigns:
+  senior-on-paper: CVs and interviews no longer prove seniority (AI-tailored CVs, cheating, fake candidates)
+  find-them: hiring takes too long (months to fill, applicant floods, interview loops)
+  scope-your-build: founders planning a team or a build against a deadline or a raise
+  cost: engineering salaries, recruiter fees and runway
+
+icp: >
+  A founder, co-founder, CTO, VP or head of engineering at a software company
+  that is hiring engineers or building a product. Startups from seed onwards and
+  scale-ups. Not job seekers, recruiters, students or vendors.
+
+keywords:
+  - applicants engineer
+  - applications software engineer
+  - resumes tailored
+  - AI resumes
+  - can't find senior engineers
+  - senior engineer can't code
+  - cheating technical interview
+  - deepfake candidate
+  - months to hire engineer
+  - interview loop
+  - recruiter fee engineer
+  - hiring engineers runway
+
+sources:
+  reddit:
+    enabled: true
+    subreddits: [startups, CTO, ExperiencedDevs, SaaS, Entrepreneur, recruitinghell]
+    per_query: 10
+  hackernews:
+    enabled: true
+    per_query: 10
+  x:
+    enabled: true          # runs only when X_BEARER_TOKEN is set
+    per_query: 20
+    min_likes: 50
+  octolens:
+    enabled: true          # runs only when OCTOLENS_API_KEY is set; covers LinkedIn and more
+    limit: 100
+
+thresholds:
+  content_min_fit: 4       # posts below this are dropped
+  people_min_icp: 4        # people below this are not passed to the SDR
+  max_posts_to_score: 40   # keeps each run's Claude cost predictable
+  max_replies_per_post: 30
+
+model: claude-sonnet-5-5
+lookback_hours: 48
