@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import html
 import re
+import time
 import xml.etree.ElementTree as ET
 
 from ..http import get
@@ -64,6 +65,7 @@ def fetch(cfg: dict) -> tuple[list[Post], SourceStatus]:
     posts, seen, errors = [], set(), 0
     for sub in sc["subreddits"]:
         for q in cfg["keywords"]:
+            time.sleep(1.5)  # stay well under Reddit's rate limit for unauthenticated feeds
             try:
                 feed = get(f"https://www.reddit.com/r/{sub}/search.rss",
                            {"q": q, "restrict_sr": 1, "sort": "new", "t": "week", "limit": sc["per_query"]})
