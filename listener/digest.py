@@ -12,7 +12,7 @@ def total(p: Post) -> int:
     return sum(p.scores.values())
 
 
-def build(posts: list[Post], statuses: list[SourceStatus], cfg: dict, sample: bool = False) -> tuple[str, list[dict]]:
+def build(posts: list[Post], statuses: list[SourceStatus], cfg: dict, sample: bool = False, unscored: int = 0) -> tuple[str, list[dict]]:
     th = cfg["thresholds"]
     content = sorted([p for p in posts if p.scores.get("fit", 0) >= th["content_min_fit"]], key=total, reverse=True)
     people = []
@@ -25,9 +25,12 @@ def build(posts: list[Post], statuses: list[SourceStatus], cfg: dict, sample: bo
     if sample:
         out += ["> **Sample run.** Built from saved example posts in `fixtures/`, not a live search. "
                 "Replies marked SAMPLE are invented test data, not real people.", ""]
-    scorer = {p.scored_by for p in posts} or {"none"}
-    out += [f"{len(content)} posts worth using · {len(people)} people who fit the ICP · scored by "
-            f"{', '.join(sorted(scorer))}", ""]
+    scorer = {p.scored_by for p in posts if p.scored_by} or {"none"}
+    summary = (f"{len(content)} posts worth using · {len(people)} people who fit the ICP · scored by "
+               f"{', '.join(sorted(scorer))}")
+    if unscored:
+        summary += f" · {unscored} post{'s' if unscored != 1 else ''} dropped (scoring failed)"
+    out += [summary, ""]
 
     out += ["## Content: posts to use", ""]
     if not content:

@@ -99,7 +99,7 @@ class Scoring(unittest.TestCase):
 
         class FakeClient:
             messages = SimpleNamespace(create=lambda **kw: SimpleNamespace(
-                content=[SimpleNamespace(type="text", text="```json\n" + json.dumps(reply) + "\n```")]))
+                content=[SimpleNamespace(type="tool_use", input=reply)]))
 
         post = scorer.claude_score(self.sample()[0], CFG, FakeClient())
         self.assertEqual(post.scored_by, "claude")

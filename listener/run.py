@@ -9,12 +9,13 @@ import argparse
 import csv
 import json
 import os
+import time
 from datetime import datetime
 from pathlib import Path
 
 import yaml
 
-from . import clay, digest, scorer
+from . import clay, digest, scorer, slack
 from .models import Post, SourceStatus
 from .sources import hackernews, octolens, reddit, x
 
@@ -92,23 +93,26 @@ def main() -> None:
 
     client = scorer.make_client()
     print(f"Scoring {len(posts)} posts with {'Claude' if client else 'the keyword fallback (no ANTHROPIC_API_KEY)'}")
-    for p in posts:
+    unscored = 0
+    for i, p in enumerate(posts):
+        if i > 0:
+            time.sleep(2)
         try:
             scorer.claude_score(p, cfg, client) if client else scorer.keyword_score(p)
         except Exception as e:
-            print(f"  Claude failed on {p.url} ({e}); using keywords")
-            scorer.keyword_score(p)
+            print(f"  {'Claude' if client else 'Keyword scorer'} failed on {p.url} ({type(e).__name__}: {e}); skipping")
+            unscored += 1
     if not client:
         statuses.append(SourceStatus("Claude (scoring)", "needs_access", "Add ANTHROPIC_API_KEY.",
                                      unlocks="Real judgement on fit, ICP and risk, plus drafted Seb angles and ad hooks."))
 
-    md, sdr_rows = digest.build(posts, statuses, cfg, sample=args.sample)
+    md, sdr_rows = digest.build(posts, statuses, cfg, sample=args.sample, unscored=unscored)
     if sdr_rows and not args.sample:
         statuses.append(clay.send(sdr_rows))
-        md, sdr_rows = digest.build(posts, statuses, cfg, sample=args.sample)
+        md, sdr_rows = digest.build(posts, statuses, cfg, sample=args.sample, unscored=unscored)
     elif not os.environ.get("CLAY_WEBHOOK_URL"):
         statuses.append(clay.send([]))
-        md, sdr_rows = digest.build(posts, statuses, cfg, sample=args.sample)
+        md, sdr_rows = digest.build(posts, statuses, cfg, sample=args.sample, unscored=unscored)
 
     stamp = datetime.now().strftime("%Y-%m-%d")
     (out / f"digest-{stamp}.md").write_text(md)
@@ -118,6 +122,7 @@ def main() -> None:
                                           "icp_fit", "said", "post_url", "campaign"])
         w.writeheader()
         w.writerows(sdr_rows)
+    slack.send(posts, sdr_rows, statuses, cfg)
     print(f"Done: {out / f'digest-{stamp}.md'}")
 
 

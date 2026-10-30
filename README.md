@@ -7,7 +7,7 @@ An agent for Cloud Employee that finds founders and CTOs talking about the pain 
 
 It drafts and flags. A person approves. Nothing posts or sends on its own.
 
-Built by Matthew Erskine as a working prototype.
+Built by Matthew Erskine as a working prototype. **[See a real run →](examples/digest.md)**
 
 ## What works today, and what needs access
 
@@ -19,6 +19,7 @@ Built by Matthew Erskine as a working prototype.
 | LinkedIn, podcasts, newsletters, reviews | Add `OCTOLENS_API_KEY` | Octolens subscription, about $120 to $160 a month | Names, titles and companies; podcast guests; unhappy competitor clients |
 | Claude scoring | Add `ANTHROPIC_API_KEY` | Pay per use, pennies per post | Judgement on fit, ICP and risk, plus the drafted angles |
 | Clay enrichment | Add `CLAY_WEBHOOK_URL` | Clay credits | Company size, funding and hiring activity for each ICP fit |
+| Slack digest | Add `SLACK_WEBHOOK_URL` | Free | Posts the top 3 content posts, ICP names and source status to a Slack channel after each run |
 
 Without a key, a source is skipped and the digest says what adding it would unlock. Without `ANTHROPIC_API_KEY`, a basic keyword scorer runs instead so the pipeline still works end to end.
 
@@ -26,7 +27,7 @@ Prices are estimates from October 2026. Check each provider before committing.
 
 ## How it works
 
-1. **Listen.** Searches each source for the keywords in `config.yaml` over the last 48 hours.
+1. **Listen.** Searches each source for the keywords in `config.yaml` over the lookback window set in `config.yaml`.
 2. **Narrow down.** A cheap keyword pass keeps the 40 most promising posts, so Claude costs stay predictable.
 3. **Read the replies.** Pulls the replies under each post (Reddit, Hacker News and X).
 4. **Score.** Claude rates each post on fit, author, reach and freshness, tags the campaign it supports, flags risks, and drafts the Seb angle and ad hook. It then checks every person in the conversation: do they agree, what is their role and company, and how well do they fit the ICP.

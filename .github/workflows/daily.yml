@@ -20,6 +20,7 @@ jobs:
           X_BEARER_TOKEN: ${{ secrets.X_BEARER_TOKEN }}
           OCTOLENS_API_KEY: ${{ secrets.OCTOLENS_API_KEY }}
           CLAY_WEBHOOK_URL: ${{ secrets.CLAY_WEBHOOK_URL }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
       - uses: actions/upload-artifact@v4
         with:
           name: digest

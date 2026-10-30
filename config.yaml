@@ -16,23 +16,28 @@ icp: >
   scale-ups. Not job seekers, recruiters, students or vendors.
 
 keywords:
-  - applicants engineer
-  - applications software engineer
-  - resumes tailored
+  - hiring engineers
+  - first engineering hire
+  - can't find engineers
+  - senior engineer hire
+  - technical interview cheating
   - AI resumes
-  - can't find senior engineers
-  - senior engineer can't code
-  - cheating technical interview
-  - deepfake candidate
-  - months to hire engineer
-  - interview loop
-  - recruiter fee engineer
-  - hiring engineers runway
+  - fake candidates
+  - months to hire
+  - too many applicants
+  - recruiter fees
+  - engineering team hiring
+  - hire a developer
+  - hiring a developer
+  - hire developers
+  - need a developer
+  - developer too expensive
+  - outsource development
 
 sources:
   reddit:
     enabled: true
-    subreddits: [startups, CTO, ExperiencedDevs, SaaS, Entrepreneur, recruitinghell]
+    subreddits: [startups, CTO, ExperiencedDevs, SaaS, Entrepreneur, ycombinator, indiehackers, SideProject]
     per_query: 10
   hackernews:
     enabled: true
@@ -51,5 +56,5 @@ thresholds:
   max_posts_to_score: 40   # keeps each run's Claude cost predictable
   max_replies_per_post: 30
 
-model: claude-sonnet-5-5
-lookback_hours: 48
+model: claude-sonnet-4-6
+lookback_hours: 168

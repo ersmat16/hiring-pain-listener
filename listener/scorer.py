@@ -1,12 +1,52 @@
 """Scores posts and people. Uses Claude when ANTHROPIC_API_KEY is set, else a basic keyword fallback."""
 from __future__ import annotations
 
-import json
 import os
 import re
 from datetime import datetime, timezone
 
 from .models import Person, Post
+
+RECORD_SCORES_TOOL = {
+    "name": "record_scores",
+    "description": "Record the scores, campaign, risk, quote, angles and people for this post.",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "post": {
+                "type": "object",
+                "properties": {
+                    "fit":       {"type": "integer", "description": "1-5"},
+                    "author":    {"type": "integer", "description": "1-5"},
+                    "reach":     {"type": "integer", "description": "1-5"},
+                    "freshness": {"type": "integer", "description": "1-5"},
+                    "campaign":  {"type": "string"},
+                    "risk":      {"type": "string"},
+                    "quote":     {"type": "string"},
+                    "seb_angle": {"type": "string"},
+                    "ad_hook":   {"type": "string"},
+                },
+                "required": ["fit", "author", "reach", "freshness", "campaign", "risk", "quote", "seb_angle", "ad_hook"],
+            },
+            "people": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "handle":  {"type": "string"},
+                        "stance":  {"type": "string", "enum": ["agrees", "neutral", "disagrees"]},
+                        "role":    {"type": "string"},
+                        "company": {"type": "string"},
+                        "icp_fit": {"type": "integer", "description": "1-5"},
+                        "reason":  {"type": "string"},
+                    },
+                    "required": ["handle", "stance", "role", "company", "icp_fit", "reason"],
+                },
+            },
+        },
+        "required": ["post", "people"],
+    },
+}
 
 INSTRUCTION = """You review social posts for this company:
 {company}
@@ -17,21 +57,7 @@ Its ideal customer (ICP):
 Campaigns a post can support:
 {campaigns}
 
-Score the post and the people in it. Reply with only JSON in exactly this shape:
-{{
-  "post": {{
-    "fit": 1-5,          "author": 1-5,   "reach": 1-5,   "freshness": 1-5,
-    "campaign": one of {campaign_keys},
-    "risk": "none" or one short line,
-    "quote": the strongest sentence from the post, verbatim,
-    "seb_angle": two sentences giving the founder's point of view in reaction. Never a pitch,
-    "ad_hook": under 12 words
-  }},
-  "people": [
-    {{"handle": "...", "stance": "agrees|neutral|disagrees", "role": "...", "company": "...",
-      "icp_fit": 1-5, "reason": "one short line"}}
-  ]
-}}
+Score the post and the people in it using the record_scores tool.
 
 Rules:
 - fit: 5 means the post states a pain the company solves directly. 1 means loosely about hiring.
@@ -101,11 +127,6 @@ def _people_block(post: Post) -> str:
     return "\n".join(lines)
 
 
-def _parse_json(text: str) -> dict:
-    m = re.search(r"\{.*\}", text, re.S)
-    return json.loads(m.group(0)) if m else {}
-
-
 def claude_score(post: Post, cfg: dict, client) -> Post:
     prompt = INSTRUCTION.format(
         company=cfg["company"].strip(), icp=cfg["icp"].strip(),
@@ -115,8 +136,14 @@ def claude_score(post: Post, cfg: dict, client) -> Post:
         likes=post.likes, replies_count=post.replies_count, views=post.views or "unknown",
         title=post.title or "-", text=post.text[:4000], people=_people_block(post),
     )
-    msg = client.messages.create(model=cfg["model"], max_tokens=1500, messages=[{"role": "user", "content": prompt}])
-    data = _parse_json("".join(b.text for b in msg.content if getattr(b, "type", "") == "text"))
+    msg = client.messages.create(
+        model=cfg["model"], max_tokens=1500,
+        tools=[RECORD_SCORES_TOOL],
+        tool_choice={"type": "tool", "name": "record_scores"},
+        messages=[{"role": "user", "content": prompt}],
+    )
+    tool_block = next(b for b in msg.content if getattr(b, "type", "") == "tool_use")
+    data = tool_block.input
     pd = data.get("post", {})
     post.scores = {k: int(pd.get(k, 0) or 0) for k in ("fit", "author", "reach", "freshness")}
     post.campaign, post.risk = pd.get("campaign", ""), pd.get("risk", "none")
@@ -134,7 +161,7 @@ def make_client():
     if not os.environ.get("ANTHROPIC_API_KEY"):
         return None
     import anthropic
-    return anthropic.Anthropic()
+    return anthropic.Anthropic(max_retries=8)
 
 
 def prefilter(posts: list[Post], limit: int) -> list[Post]:
