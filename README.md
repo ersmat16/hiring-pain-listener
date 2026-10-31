@@ -1,13 +1,13 @@
 # Hiring pain listener
 
-An agent for Cloud Employee that finds founders and CTOs talking about the pain of hiring engineers, and turns those conversations into two lists every day:
+Finds founders and CTOs talking about the pain of hiring engineers, and turns those conversations into two lists every day:
 
-- **Content:** posts worth reacting to in Seb's posts and paid LinkedIn campaigns, each with a draft angle, an ad hook and the key quote.
-- **People:** the poster and anyone in the replies who agrees and fits the ICP, ready for the SDR and the Clay trigger list.
+- **Content:** posts worth reacting to, each with a draft angle, an ad hook and the key quote.
+- **People:** the poster and anyone in the replies who agrees and fits the ICP, ready for outreach.
 
 It drafts and flags. A person approves. Nothing posts or sends on its own.
 
-Built by Matthew Erskine as a working prototype. **[See a real run →](examples/digest.md)**
+**[See a real run →](examples/digest.md)**
 
 ## What works today, and what needs access
 
@@ -62,7 +62,7 @@ Everything is in `config.yaml`: keywords, subreddits, the ICP definition, the ca
 
 - **Paid ads never quote a named person** without their permission. Use the stat or a paraphrase.
 - **Never quote job seekers in distress**, even anonymously.
-- **Posts that criticise engineers by country** are flagged as a risk, because they clash with Cloud Employee's model.
+- **Posts that criticise engineers by country** are flagged as a risk.
 - **Follow-ups never mention someone's post.** They offer something useful that matches what the person said.
 
 ## Notes for whoever builds it out
