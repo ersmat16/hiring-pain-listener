@@ -82,7 +82,8 @@ class Scoring(unittest.TestCase):
         self.assertEqual(stances["sample_cto_fintech"], "agrees")
         self.assertEqual(stances["sample_recruiter"], "neutral")
         md, rows = digest.build(posts, [], CFG, sample=True)
-        self.assertIn("## Content", md)
+        self.assertIn("## Act on", md)
+        self.assertIn("## Use in content", md)
         handles = {r["handle"] for r in rows}
         self.assertIn("sample_cto_fintech", handles)
         self.assertNotIn("sample_jobseeker", handles)
@@ -91,7 +92,8 @@ class Scoring(unittest.TestCase):
     def test_claude_scorer_parses_reply(self):
         reply = {"post": {"fit": 5, "author": 4, "reach": 5, "freshness": 5, "campaign": "senior-on-paper",
                           "risk": "none", "quote": "Most resumes are suspiciously well-tailored",
-                          "seb_angle": "A. B.", "ad_hook": "1,200 applicants. Now what?"},
+                          "seb_angle": "A. B.", "ad_hook": "1,200 applicants. Now what?",
+                          "use": "act", "why": "CTO is actively hiring and in the replies"},
                  "people": [{"handle": "expatanon", "stance": "agrees", "role": "unknown", "company": "unknown",
                              "icp_fit": 2, "reason": "No bio"},
                             {"handle": "sample_cto_fintech", "stance": "agrees", "role": "CTO",
@@ -104,6 +106,8 @@ class Scoring(unittest.TestCase):
         post = scorer.claude_score(self.sample()[0], CFG, FakeClient())
         self.assertEqual(post.scored_by, "claude")
         self.assertEqual(post.ad_hook, "1,200 applicants. Now what?")
+        self.assertEqual(post.use, "act")
+        self.assertEqual(post.use_why, "CTO is actively hiring and in the replies")
         cto = next(r for r in post.replies if r.handle == "sample_cto_fintech")
         self.assertEqual((cto.icp_fit, cto.company), (5, "Series A fintech"))
 

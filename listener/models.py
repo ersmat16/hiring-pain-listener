@@ -43,6 +43,8 @@ class Post:
     quote: str = ""
     seb_angle: str = ""
     ad_hook: str = ""
+    use: str = ""            # "act" | "content" | "skip"
+    use_why: str = ""
     scored_by: str = ""      # "claude" or "keywords"
 
     def to_dict(self) -> dict:

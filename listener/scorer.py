@@ -25,8 +25,13 @@ RECORD_SCORES_TOOL = {
                     "quote":     {"type": "string"},
                     "seb_angle": {"type": "string"},
                     "ad_hook":   {"type": "string"},
+                    "use":       {"type": "string", "enum": ["act", "content", "skip"],
+                                  "description": "'act' if an ICP buyer is in the conversation; "
+                                                 "'content' if useful for posts or ads regardless of who wrote it; "
+                                                 "'skip' otherwise"},
+                    "why":       {"type": "string", "description": "One line explaining the use choice"},
                 },
-                "required": ["fit", "author", "reach", "freshness", "campaign", "risk", "quote", "seb_angle", "ad_hook"],
+                "required": ["fit", "author", "reach", "freshness", "campaign", "risk", "quote", "seb_angle", "ad_hook", "use", "why"],
             },
             "people": {
                 "type": "array",
@@ -69,6 +74,10 @@ Rules:
 - Judge each person's role and company only from their bio and what they wrote. If unknown, say "unknown"
   and score icp_fit 2 or lower. Do not guess employers.
 - Include every person listed, the author first.
+- use: set to "act" if an ICP buyer is in the conversation; "content" if the post has a strong quote,
+  stat or debate useful for posts or ads regardless of who wrote it; "skip" otherwise.
+  why: one line explaining the choice.
+- Never use em dashes. ad_hook must be 12 words or fewer, one sentence.
 
 Post ({platform}, {community}, posted {created_at}, {likes} likes, {replies_count} replies, {views} views):
 Title: {title}
@@ -109,6 +118,8 @@ def keyword_score(post: Post) -> Post:
     post.risk = "none"
     sentences = re.split(r"(?<=[.!?])\s+", post.text)
     post.quote = max(sentences, key=lambda s: len(PAIN_RE.findall(s)), default="")[:240]
+    post.use = "content" if hits >= 2 else "skip"
+    post.use_why = "Keyword hits suggest hiring pain" if hits >= 2 else "Too few keyword matches"
     post.scored_by = "keywords"
     for p in [post.author, *post.replies]:
         p.stance = "agrees" if p.is_author or AGREE_RE.search(p.said) else "neutral"
@@ -148,7 +159,11 @@ def claude_score(post: Post, cfg: dict, client) -> Post:
     post.scores = {k: int(pd.get(k, 0) or 0) for k in ("fit", "author", "reach", "freshness")}
     post.campaign, post.risk = pd.get("campaign", ""), pd.get("risk", "none")
     post.quote, post.seb_angle, post.ad_hook = pd.get("quote", ""), pd.get("seb_angle", ""), pd.get("ad_hook", "")
+    post.use, post.use_why = pd.get("use", "skip"), pd.get("why", "")
     post.scored_by = "claude"
+    if post.ad_hook and len(post.ad_hook.split()) > 12:
+        first = re.split(r"(?<=[.!?])\s+", post.ad_hook.strip())[0]
+        post.ad_hook = first if len(first.split()) <= 12 else " ".join(first.split()[:12])
     by_handle = {x.get("handle"): x for x in data.get("people", [])}
     for p in [post.author, *post.replies]:
         x = by_handle.get(p.handle, {})
