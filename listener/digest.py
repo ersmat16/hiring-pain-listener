@@ -14,7 +14,7 @@ def _post_detail(i: int, p: Post) -> list[str]:
     lines = [f"### {i}. {title}", "",
              f"- **Where:** {PLATFORM.get(p.platform, p.platform)}"
              f"{' · ' + p.community if p.community and p.community != PLATFORM.get(p.platform) else ''}"
-             f" · [open]({p.url}) · {p.likes:,} likes" + (f" · {p.views:,} views" if p.views else ""),
+             f" · [open]({p.url}) · {p.likes:,} {'like' if p.likes == 1 else 'likes'}" + (f" · {p.views:,} views" if p.views else ""),
              f"- **Scores:** fit {s.get('fit')}, author {s.get('author')}, reach {s.get('reach')}, "
              f"freshness {s.get('freshness')} · **Campaign:** {p.campaign}"]
     if p.risk and p.risk.lower() != "none":
@@ -34,8 +34,9 @@ def build(posts: list[Post], statuses: list[SourceStatus], cfg: dict,
     th = cfg["thresholds"]
 
     act     = [p for p in posts if p.use == "act"]
-    content = [p for p in posts if p.use == "content"]
-    skip    = [p for p in posts if p.use == "skip"]
+    content = [p for p in posts if p.use == "content" and p.scores.get("fit", 0) >= 3]
+    skip    = ([p for p in posts if p.use == "skip"] +
+               [p for p in posts if p.use == "content" and p.scores.get("fit", 0) < 3])
 
     people = []
     for p in act + content:
@@ -72,10 +73,12 @@ def build(posts: list[Post], statuses: list[SourceStatus], cfg: dict,
     out += ["## Also read", ""]
     if not skip:
         out += ["Nothing else today.", ""]
-    for p in skip:
-        title = p.title or (p.text[:80] + ("..." if len(p.text) > 80 else ""))
-        out.append(f"- [{title}]({p.url}){' — ' + p.use_why if p.use_why else ''}")
-    out.append("")
+    else:
+        out += [f"<details><summary>{len(skip)} other {'post' if len(skip) == 1 else 'posts'} read and skipped (click to see why)</summary>", ""]
+        for p in skip:
+            title = p.title or (p.text[:80] + ("..." if len(p.text) > 80 else ""))
+            out.append(f"- [{title}]({p.url}){': ' + p.use_why if p.use_why else ''}")
+        out += ["", "</details>", ""]
 
     out += ["## People: ICP fits in these conversations", ""]
     if people:

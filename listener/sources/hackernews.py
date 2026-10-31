@@ -64,8 +64,8 @@ def fetch(cfg: dict, cache: dict) -> tuple[list[Post], SourceStatus]:
     for q in cfg["keywords"]:
         try:
             res = get_json(f"{ALGOLIA}/search_by_date",
-                           {"query": q, "tags": "story", "numericFilters": f"created_at_i>{since}",
-                            "hitsPerPage": sc["per_query"]})
+                           {"query": f'"{q}"', "tags": "story", "numericFilters": f"created_at_i>{since}",
+                            "hitsPerPage": sc["per_query"], "advancedSyntax": "true"})
         except Exception:
             errors += 1
             continue
